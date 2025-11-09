@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZAP Spidering &amp; Authenticated Security Scanning</title>
+    <style>
+        :root {
+            --color-white: rgba(255, 255, 255, 1);
+            --color-black: rgba(0, 0, 0, 1);
+            --color-cream-50: rgba(252, 252, 249, 1);
+            --color-cream-100: rgba(255, 255, 253, 1);
+            --color-gray-200: rgba(245, 245, 245, 1);
+            --color-gray-300: rgba(167, 169, 169, 1);
+            --color-gray-400: rgba(119, 124, 124, 1);
+            --color-slate-500: rgba(98, 108, 113, 1);
+            --color-brown-600: rgba(94, 82, 64, 1);
+            --color-charcoal-700: rgba(31, 33, 33, 1);
+            --color-charcoal-800: rgba(38, 40, 40, 1);
+            --color-slate-900: rgba(19, 52, 59, 1);
+            --color-teal-300: rgba(50, 184, 198, 1);
+            --color-teal-400: rgba(45, 166, 178, 1);
+            --color-teal-500: rgba(33, 128, 141, 1);
+            --color-teal-600: rgba(29, 116, 128, 1);
+            --color-teal-700: rgba(26, 104, 115, 1);
+            --color-teal-800: rgba(41, 150, 161, 1);
+            --color-red-400: rgba(255, 84, 89, 1);
+            --color-red-500: rgba(192, 21, 47, 1);
+            --color-orange-400: rgba(230, 129, 97, 1);
+            --color-orange-500: rgba(168, 75, 47, 1);
+            --color-brown-600-rgb: 94, 82, 64;
+            --color-teal-500-rgb: 33, 128, 141;
+            --color-slate-900-rgb: 19, 52, 59;
+            --color-slate-500-rgb: 98, 108, 113;
+            --color-red-500-rgb: 192, 21, 47;
+            --color-red-400-rgb: 255, 84, 89;
+            --color-orange-500-rgb: 168, 75, 47;
+            --color-orange-400-rgb: 230, 129, 97;
+            --color-bg-1: rgba(59, 130, 246, 0.08);
+            --color-bg-2: rgba(245, 158, 11, 0.08);
+            --color-bg-3: rgba(34, 197, 94, 0.08);
+            --color-bg-4: rgba(239, 68, 68, 0.08);
+            --color-bg-5: rgba(147, 51, 234, 0.08);
+            --color-bg-6: rgba(249, 115, 22, 0.08);
+            --color-bg-7: rgba(236, 72, 153, 0.08);
+            --color-bg-8: rgba(6, 182, 212, 0.08);
+            --color-background: var(--color-cream-50);
+            --color-surface: var(--color-cream-100);
+            --color-text: var(--color-slate-900);
+            --color-text-secondary: var(--color-slate-500);
+            --color-primary: var(--color-teal-500);
+            --color-primary-hover: var(--color-teal-600);
+            --color-primary-active: var(--color-teal-700);
+            --color-secondary: rgba(var(--color-brown-600-rgb), 0.12);
+            --color-secondary-hover: rgba(var(--color-brown-600-rgb), 0.2);
+            --color-secondary-active: rgba(var(--color-brown-600-rgb), 0.25);
+            --color-border: rgba(var(--color-brown-600-rgb), 0.2);
+            --color-btn-primary-text: var(--color-cream-50);
+            --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
+            --color-card-border-inner: rgba(var(--color-brown-600-rgb), 0.12);
+            --color-error: var(--color-red-500);
+            --color-success: var(--color-teal-500);
+            --color-warning: var(--color-orange-500);
+            --color-info: var(--color-slate-500);
+            --color-focus-ring: rgba(var(--color-teal-500-rgb), 0.4);
+            --color-select-caret: rgba(var(--color-slate-900-rgb), 0.8);
+            --focus-ring: 0 0 0 3px var(--color-focus-ring);
+            --focus-outline: 2px solid var(--color-primary);
+            --status-bg-opacity: 0.15;
+            --status-border-opacity: 0.25;
+            --color-success-rgb: 33, 128, 141;
+            --color-error-rgb: 192, 21, 47;
+            --color-warning-rgb: 168, 75, 47;
+            --color-info-rgb: 98, 108, 113;
+            --font-family-base: "FKGroteskNeue", "Segoe UI", "Arial", -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-family-mono: "Berkeley Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            --font-size-xs: 11px;
+            --font-size-sm: 12px;
+            --font-size-base: 14px;
+            --font-size-md: 14px;
+            --font-size-lg: 16px;
+            --font-size-xl: 18px;
+            --font-size-2xl: 20px;
+            --font-size-3xl: 24px;
+            --font-size-4xl: 30px;
+            --font-weight-normal: 400;
+            --font-weight-medium: 500;
+            --font-weight-semibold: 550;
+            --font-weight-bold: 600;
+            --line-height-tight: 1.2;
+            --line-height-normal: 1.5;
+            --letter-spacing-tight: -0.01em;
+            --space-0: 0;
+            --space-1: 1px;
+            --space-2: 2px;
+            --space-4: 4px;
+            --space-6: 6px;
+            --space-8: 8px;
+            --space-10: 10px;
+            --space-12: 12px;
+            --space-16: 16px;
+            --space-20: 20px;
+            --space-24: 24px;
+            --space-32: 32px;
+            --radius-sm: 6px;
+            --radius-base: 8px;
+            --radius-md: 10px;
+            --radius-lg: 12px;
+            --radius-full: 9999px;
+            --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.02);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+            --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 -1px 0 rgba(0, 0, 0, 0.03);
+            --duration-fast: 150ms;
+            --duration-normal: 250ms;
+            --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
+            --container-sm: 640px;
+            --container-md: 768px;
+            --container-lg: 1024px;
+            --container-xl: 1280px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-gray-400-rgb: 119, 124, 124;
+                --color-teal-300-rgb: 50, 184, 198;
+                --color-gray-300-rgb: 167, 169, 169;
+                --color-gray-200-rgb: 245, 245, 245;
+                --color-bg-1: rgba(29, 78, 216, 0.15);
+                --color-bg-2: rgba(180, 83, 9, 0.15);
+                --color-bg-3: rgba(21, 128, 61, 0.15);
+                --color-bg-4: rgba(185, 28, 28, 0.15);
+                --color-bg-5: rgba(107, 33, 168, 0.15);
+                --color-bg-6: rgba(194, 65, 12, 0.15);
+                --color-bg-7: rgba(190, 24, 93, 0.15);
+                --color-bg-8: rgba(8, 145, 178, 0.15);
+                --color-background: var(--color-charcoal-700);
+                --color-surface: var(--color-charcoal-800);
+                --color-text: var(--color-gray-200);
+                --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
+                --color-primary: var(--color-teal-300);
+                --color-primary-hover: var(--color-teal-400);
+                --color-primary-active: var(--color-teal-800);
+                --color-secondary: rgba(var(--color-gray-400-rgb), 0.15);
+                --color-secondary-hover: rgba(var(--color-gray-400-rgb), 0.25);
+                --color-secondary-active: rgba(var(--color-gray-400-rgb), 0.3);
+                --color-border: rgba(var(--color-gray-400-rgb), 0.3);
+                --color-error: var(--color-red-400);
+                --color-success: var(--color-teal-300);
+                --color-warning: var(--color-orange-400);
+                --color-info: var(--color-gray-300);
+                --color-focus-ring: rgba(var(--color-teal-300-rgb), 0.4);
+                --color-btn-primary-text: var(--color-slate-900);
+                --color-card-border: rgba(var(--color-gray-400-rgb), 0.2);
+                --color-card-border-inner: rgba(var(--color-gray-400-rgb), 0.15);
+                --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+                --color-border-secondary: rgba(var(--color-gray-400-rgb), 0.2);
+                --color-select-caret: rgba(var(--color-gray-200-rgb), 0.8);
+                --color-success-rgb: var(--color-teal-300-rgb);
+                --color-error-rgb: var(--color-red-400-rgb);
+                --color-warning-rgb: var(--color-orange-400-rgb);
+                --color-info-rgb: var(--color-gray-300-rgb);
+            }
+        }
+
+        @font-face {
+            font-family: 'FKGroteskNeue';
+            src: url('https://r2cdn.perplexity.ai/fonts/FKGroteskNeue.woff2') format('woff2');
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family-base);
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a2e 50%, #16213e 100%);
+            color: var(--color-text);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .presentation-container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide-wrapper {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: var(--space-32);
+            padding-top: 60px;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: opacity 0.5s var(--ease-standard), transform 0.5s var(--ease-standard);
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+            z-index: 1;
+        }
+
+        .slide.prev {
+            transform: translateX(-100%);
+        }
+
+        /* Color themes for slides - VIBRANT */
+        .slide[data-color="blue"] {
+            background: linear-gradient(135deg, #001a33 0%, #003d66 50%, #00d4ff22 100%);
+        }
+
+        .slide[data-color="teal"] {
+            background: linear-gradient(135deg, #001a1a 0%, #003d3d 50%, #00ffb322 100%);
+        }
+
+        .slide[data-color="orange"] {
+            background: linear-gradient(135deg, #1a0a00 0%, #331400 50%, #ff6b3522 100%);
+        }
+
+        .slide[data-color="purple"] {
+            background: linear-gradient(135deg, #1a001a 0%, #330033 50%, #b759ff22 100%);
+        }
+
+        .slide[data-color="red"] {
+            background: linear-gradient(135deg, #1a0000 0%, #330011 50%, #ff2e6322 100%);
+        }
+
+        .slide[data-color="green"] {
+            background: linear-gradient(135deg, #001a0a 0%, #003d1f 50%, #00ff8822 100%);
+        }
+
+        .slide-content {
+            max-width: 900px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .slide-icon {
+            font-size: 64px;
+            margin-bottom: var(--space-24);
+            opacity: 0.9;
+            animation: float 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px currentColor);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .slide-title {
+            font-size: 48px;
+            font-weight: var(--font-weight-bold);
+            background: linear-gradient(135deg, #00d4ff 0%, #00ffb3 50%, #b759ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: var(--space-24);
+            line-height: var(--line-height-tight);
+            letter-spacing: var(--letter-spacing-tight);
+            text-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+            position: relative;
+        }
+
+        .slide-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #00d4ff, transparent);
+            box-shadow: 0 0 10px #00d4ff;
+        }
+
+        .slide-subtitle {
+            font-size: 24px;
+            color: var(--color-text-secondary);
+            font-weight: var(--font-weight-normal);
+            margin-top: var(--space-16);
+        }
+
+        .slide-text {
+            font-size: 20px;
+            line-height: 1.8;
+            color: #e0e0e0;
+            max-width: 800px;
+            margin: 0 auto var(--space-24) auto;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: var(--space-32);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .slide-text:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 212, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border-color: rgba(0, 212, 255, 0.3);
+        }
+
+        /* Title slide specific */
+        .slide.title-slide {
+            justify-content: center;
+        }
+
+        .slide.title-slide .slide-title {
+            font-size: 56px;
+            margin-bottom: var(--space-16);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 20px rgba(0, 212, 255, 0.3), 0 0 40px rgba(0, 212, 255, 0.2); }
+            to { text-shadow: 0 0 30px rgba(0, 212, 255, 0.6), 0 0 60px rgba(0, 212, 255, 0.4); }
+        }
+
+        .slide.title-slide .slide-subtitle {
+            font-size: 28px;
+            color: #b0b0b0;
+        }
+
+        /* Navigation */
+        .navigation {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-24) var(--space-32);
+            background: rgba(10, 14, 39, 0.9);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(0, 212, 255, 0.2);
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: var(--space-12);
+        }
+
+        .nav-btn {
+            padding: var(--space-12) var(--space-24);
+            background: linear-gradient(135deg, #00d4ff 0%, #00a8cc 100%);
+            color: #0a0e27;
+            border: none;
+            border-radius: var(--radius-base);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-medium);
+            cursor: pointer;
+            transition: all var(--duration-normal) var(--ease-standard);
+            font-family: var(--font-family-base);
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #00ffb3 0%, #00d4ff 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0, 212, 255, 0.5);
+        }
+
+        .nav-btn:active:not(:disabled) {
+            background: var(--color-primary-active);
+            transform: translateY(0);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            font-size: var(--font-size-base);
+            color: #00d4ff;
+            font-weight: var(--font-weight-medium);
+        }
+
+        /* Accent decorations */
+        .accent-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00d4ff;
+            display: inline-block;
+            margin: 0 var(--space-8);
+            box-shadow: 0 0 10px #00d4ff;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.2); }
+        }
+
+        .screenshot {
+            max-width: 70%;
+            width: 100%;
+            height: auto;
+            border-radius: var(--radius-lg);
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 212, 255, 0.2);
+            margin-top: var(--space-24);
+            object-fit: contain;
+            transition: all 0.3s ease;
+        }
+
+        .screenshot:hover {
+            transform: scale(1.02);
+            border-color: rgba(0, 212, 255, 0.6);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(0, 212, 255, 0.4);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .slide {
+                padding: var(--space-16);
+            }
+
+            .slide-title {
+                font-size: 32px;
+            }
+
+            .slide.title-slide .slide-title {
+                font-size: 36px;
+            }
+
+            .slide-subtitle {
+                font-size: 18px;
+            }
+
+            .slide.title-slide .slide-subtitle {
+                font-size: 20px;
+            }
+
+            .slide-text {
+                font-size: 16px;
+                padding: var(--space-20);
+            }
+
+            .navigation {
+                padding: var(--space-16);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="slide-wrapper">
+            <!-- Slide 1: Title -->
+            <div class="slide title-slide active" data-color="blue">
+                <div class="slide-content">
+                    <div class="slide-icon">🔒</div>
+                    <h1 class="slide-title">ZAP Spidering &amp; Authenticated Security Scanning</h1>
+                    <p class="slide-subtitle">A Comprehensive Guide to Web Application Testing</p>
+                </div>
+            </div>
+
+            <!-- Slide 2: Introduction to ZAP Spidering -->
+            <div class="slide" data-color="teal">
+                <div class="slide-content">
+                    <div class="slide-icon">🕷️</div>
+                    <h2 class="slide-title">Introduction to ZAP Spidering</h2>
+                    <p class="slide-text">ZAP's spider maps web app resources by following links. Start <strong>Tools → Spider</strong> and set starting URL (<code>http://MACHINE_IP:8082/</code>).</p>
+                    <img src="image1.png" alt="ZAP Spider Setup" class="screenshot">
+                </div>
+            </div>
+
+            <!-- Slide 3: Spider Options -->
+            <div class="slide" data-color="orange">
+                <div class="slide-content">
+                    <div class="slide-icon">⚙️</div>
+                    <h2 class="slide-title">Spider Options</h2>
+                    <p class="slide-text">Use <strong>Recurse</strong> for recursive crawling and <strong>Spider Subtree Only</strong> to limit to subfolders. Regular spider misses JS-generated links like <code>/nospiders-gallery.php</code>.</p>
+                    <img src="image2.png" alt="Spider Options" class="screenshot">
+                </div>
+            </div>
+
+            <!-- Slide 4: AJAX Spider -->
+            <div class="slide" data-color="purple">
+                <div class="slide-content">
+                    <div class="slide-icon">🌐</div>
+                    <h2 class="slide-title">AJAX Spider</h2>
+                    <p class="slide-text">Uses a real browser (Firefox/Chrome) to process JavaScript and discover dynamic links. Run <strong>Tools → AJAX Spider</strong> and choose a browser.</p>
+                    <img src="image3.png" alt="AJAX Spider" class="screenshot">
+                </div>
+            </div>
+
+            <!-- Slide 5: Scan Policy Configuration -->
+            <div class="slide" data-color="blue">
+                <div class="slide-content">
+                    <div class="slide-icon">📋</div>
+                    <h2 class="slide-title">Scan Policy Configuration</h2>
+                    <p class="slide-text">Customise tests under <strong>Analyse → Scan Policy Manager</strong>. Adjust <strong>Threshold</strong> (confidence) and <strong>Strength</strong> (test intensity).</p>
+                    <img src="image4.png" alt="Scan Policy Configuration" class="screenshot">
+                </div>
+            </div>
+
+            <!-- Slide 6: Disabling Irrelevant Tests -->
+            <div class="slide" data-color="red">
+                <div class="slide-content">
+                    <div class="slide-icon">🚫</div>
+                    <h2 class="slide-title">Disabling Irrelevant Tests</h2>
+                    <p class="slide-text">Disable SQL/XML tests for apps without databases or XML processing; also disable DOM XSS to speed scans.</p>
+                    <img src="image5.png" alt="Disabling Tests" class="screenshot">
+                </div>
+            </div>
+
+            <!-- Slide 7: Running the First Active Scan -->
+            <div class="slide" data-color="teal">
+                <div class="slide-content">
+                    <div class="slide-icon">🔍</div>
+                    <h2 class="slide-title">Running the First Active Scan</h2>
+                    <p class="slide-text">Use <strong>Tools → Active Scan</strong> with the custom policy. Review Alerts and mark false positives as needed.</p>
+                    <img src="image6.png" alt="Active Scan" class="screenshot">
+                </div>
+            </div>
+
+            <!-- Slide 8: Handling Logins -->
+            <div class="slide" data-color="orange">
+                <div class="slide-content">
+                    <div class="slide-icon">🔑</div>
+                    <h2 class="slide-title">Handling Logins</h2>
+                    <p class="slide-text">Record authentication via a ZEST script (<strong>Record New ZEST Script</strong>). Login with <code>nospiders/nospiders</code> to capture auth flow.</p>
+                    <img src="image7.png" alt="Handling Logins" class="screenshot">
+                </div>
+            </div>
+
+            <!-- Slide 9: Creating and Configuring Contexts -->
+            <div class="slide" data-color="purple">
+                <div class="slide-content">
+                    <div class="slide-icon">🗂️</div>
+                    <h2 class="slide-title">Creating and Configuring Contexts</h2>
+                    <p class="slide-text">Include the site in a Context, link the ZEST Script under <strong>Script-based Authentication</strong>, and add a user.</p>
+                    <img src="image8.png" alt="Configuring Contexts" class="screenshot">
+                </div>
+            </div>
+
+            <!-- Slide 10: Re-spidering and Avoiding Logouts -->
+            <div class="slide" data-color="blue">
+                <div class="slide-content">
+                    <div class="slide-icon">🔄</div>
+                    <h2 class="slide-title">Re-spidering and Avoiding Logouts</h2>
+                    <p class="slide-text">Re-run spider with the Context/User. Exclude <code>logout.php</code> and add logged-in/logged-out indicators to detect session state.</p>
+                    <img src="image9.png" alt="Re-spidering" class="screenshot">
+                </div>
+            </div>
+
+            <!-- Slide 11: Final Authenticated Scan -->
+            <div class="slide" data-color="green">
+                <div class="slide-content">
+                    <div class="slide-icon">✅</div>
+                    <h2 class="slide-title">Final Authenticated Scan</h2>
+                    <p class="slide-text">With authentication working, rerun <strong>Active Scan</strong> to discover vulnerabilities visible only to logged-in users.</p>
+                    <img src="image10.png" alt="Final Authenticated Scan" class="screenshot">
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <div class="nav-buttons">
+                <button class="nav-btn" id="prevBtn" disabled>← Previous</button>
+                <button class="nav-btn" id="nextBtn">Next →</button>
+            </div>
+            <div class="slide-counter">
+                <span class="accent-dot"></span>
+                <span id="currentSlide">1</span> / <span id="totalSlides">11</span>
+                <span class="accent-dot"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const currentSlideSpan = document.getElementById('currentSlide');
+        const totalSlidesSpan = document.getElementById('totalSlides');
+
+        totalSlidesSpan.textContent = slides.length;
+
+        function updateSlides() {
+            slides.forEach((slide, index) => {
+                slide.classList.remove('active', 'prev');
+                
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                } else if (index < currentSlide) {
+                    slide.classList.add('prev');
+                }
+            });
+
+            currentSlideSpan.textContent = currentSlide + 1;
+            
+            // Update button states
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === slides.length - 1;
+        }
+
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                updateSlides();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlides();
+            }
+        }
+
+        // Event listeners
+        nextBtn.addEventListener('click', nextSlide);
+        prevBtn.addEventListener('click', prevSlide);
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        // Initialize
+        updateSlides();
+    </script>
+</body>
+</html>
