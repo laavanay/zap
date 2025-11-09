@@ -486,7 +486,7 @@
                     <div class="slide-icon">🕷️</div>
                     <h2 class="slide-title">Introduction to ZAP Spidering</h2>
                     <p class="slide-text">ZAP's spider maps web app resources by following links. Start <strong>Tools → Spider</strong> and set starting URL (<code>http://MACHINE_IP:8082/</code>).</p>
-                    <img src="image1.png" alt="ZAP Spider Setup" class="screenshot">
+                    <img src="images/image1.png" alt="ZAP Spider Setup" class="screenshot">
                 </div>
             </div>
 
@@ -496,7 +496,7 @@
                     <div class="slide-icon">⚙️</div>
                     <h2 class="slide-title">Spider Options</h2>
                     <p class="slide-text">Use <strong>Recurse</strong> for recursive crawling and <strong>Spider Subtree Only</strong> to limit to subfolders. Regular spider misses JS-generated links like <code>/nospiders-gallery.php</code>.</p>
-                    <img src="image2.png" alt="Spider Options" class="screenshot">
+                    <img src="images/image2.png" alt="Spider Options" class="screenshot">
                 </div>
             </div>
 
@@ -506,7 +506,7 @@
                     <div class="slide-icon">🌐</div>
                     <h2 class="slide-title">AJAX Spider</h2>
                     <p class="slide-text">Uses a real browser (Firefox/Chrome) to process JavaScript and discover dynamic links. Run <strong>Tools → AJAX Spider</strong> and choose a browser.</p>
-                    <img src="image3.png" alt="AJAX Spider" class="screenshot">
+                    <img src="images/image3.png" alt="AJAX Spider" class="screenshot">
                 </div>
             </div>
 
@@ -516,7 +516,7 @@
                     <div class="slide-icon">📋</div>
                     <h2 class="slide-title">Scan Policy Configuration</h2>
                     <p class="slide-text">Customise tests under <strong>Analyse → Scan Policy Manager</strong>. Adjust <strong>Threshold</strong> (confidence) and <strong>Strength</strong> (test intensity).</p>
-                    <img src="image4.png" alt="Scan Policy Configuration" class="screenshot">
+                    <img src="images/image4.png" alt="Scan Policy Configuration" class="screenshot">
                 </div>
             </div>
 
@@ -526,7 +526,7 @@
                     <div class="slide-icon">🚫</div>
                     <h2 class="slide-title">Disabling Irrelevant Tests</h2>
                     <p class="slide-text">Disable SQL/XML tests for apps without databases or XML processing; also disable DOM XSS to speed scans.</p>
-                    <img src="image5.png" alt="Disabling Tests" class="screenshot">
+                    <img src="images/image5.png" alt="Disabling Tests" class="screenshot">
                 </div>
             </div>
 
@@ -536,7 +536,7 @@
                     <div class="slide-icon">🔍</div>
                     <h2 class="slide-title">Running the First Active Scan</h2>
                     <p class="slide-text">Use <strong>Tools → Active Scan</strong> with the custom policy. Review Alerts and mark false positives as needed.</p>
-                    <img src="image6.png" alt="Active Scan" class="screenshot">
+                    <img src="images/image6.png" alt="Active Scan" class="screenshot">
                 </div>
             </div>
 
@@ -546,7 +546,7 @@
                     <div class="slide-icon">🔑</div>
                     <h2 class="slide-title">Handling Logins</h2>
                     <p class="slide-text">Record authentication via a ZEST script (<strong>Record New ZEST Script</strong>). Login with <code>nospiders/nospiders</code> to capture auth flow.</p>
-                    <img src="image7.png" alt="Handling Logins" class="screenshot">
+                    <img src="images/image7.png" alt="Handling Logins" class="screenshot">
                 </div>
             </div>
 
@@ -556,7 +556,7 @@
                     <div class="slide-icon">🗂️</div>
                     <h2 class="slide-title">Creating and Configuring Contexts</h2>
                     <p class="slide-text">Include the site in a Context, link the ZEST Script under <strong>Script-based Authentication</strong>, and add a user.</p>
-                    <img src="image8.png" alt="Configuring Contexts" class="screenshot">
+                    <img src="images/image8.png" alt="Configuring Contexts" class="screenshot">
                 </div>
             </div>
 
@@ -566,7 +566,7 @@
                     <div class="slide-icon">🔄</div>
                     <h2 class="slide-title">Re-spidering and Avoiding Logouts</h2>
                     <p class="slide-text">Re-run spider with the Context/User. Exclude <code>logout.php</code> and add logged-in/logged-out indicators to detect session state.</p>
-                    <img src="image9.png" alt="Re-spidering" class="screenshot">
+                    <img src="images/image9.png" alt="Re-spidering" class="screenshot">
                 </div>
             </div>
 
@@ -576,7 +576,7 @@
                     <div class="slide-icon">✅</div>
                     <h2 class="slide-title">Final Authenticated Scan</h2>
                     <p class="slide-text">With authentication working, rerun <strong>Active Scan</strong> to discover vulnerabilities visible only to logged-in users.</p>
-                    <img src="image10.png" alt="Final Authenticated Scan" class="screenshot">
+                    <img src="images/image10.png" alt="Final Authenticated Scan" class="screenshot">
                 </div>
             </div>
         </div>
